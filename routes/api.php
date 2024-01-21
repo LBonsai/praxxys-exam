@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Product\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +22,6 @@ Route::prefix('auth')->group(function () {
     Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::delete('logout', [AuthController::class, 'destroy'])->name('logout');
     });
+
+    Route::apiResource('products', ProductController::class);
 })->name('auth.');

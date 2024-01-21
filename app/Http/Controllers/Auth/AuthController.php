@@ -14,9 +14,9 @@ class AuthController extends Controller
     /**
      * store
      * @param UserAuthRequest $request
-     * @return JsonResponse
+     * @return UserResource|JsonResponse
      */
-    public function store(UserAuthRequest $request): JsonResponse
+    public function store(UserAuthRequest $request): UserResource|JsonResponse
     {
         $parameters = $request->validated();
         $loginType = filter_var($parameters['username_or_email'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
@@ -29,9 +29,7 @@ class AuthController extends Controller
         if (Auth::attempt($userCredentials, $parameters['remember_me'])) {
             $request->session()->regenerate();
 
-            return response()->json([
-                'data' => new UserResource(Auth::user())
-            ]);
+            return new UserResource(Auth::user());
         }
 
         return response()->json([
@@ -54,6 +52,6 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Logged out'
-        ], 200);
+        ]);
     }
 }
