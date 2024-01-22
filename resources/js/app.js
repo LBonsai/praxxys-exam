@@ -3,7 +3,7 @@ import 'flowbite';
 
 import {createApp} from 'vue'
 import App from './App.vue'
-import router from "./Router/index"
+import router from "./Router/router"
 import { createPinia } from "pinia"
 
 createApp(App)

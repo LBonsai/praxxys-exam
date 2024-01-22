@@ -15,7 +15,7 @@ const routes = [
         name: "auth",
         component: auth,
         beforeEnter: (to, from, next) => {
-            useUserStore().user.id ? next({name: "app.dashboard"}) : next()
+            useUserStore().user.id ? next({ name: "app.dashboard" }) : next()
         },
         children: [
             {
@@ -28,7 +28,7 @@ const routes = [
     {
         path: "/app",
         beforeEnter: (to, from, next) => {
-            useUserStore().user.id ? next() : next({ name: 'auth.login' })
+            useUserStore().user.id ? next() : next({ name: "auth.login" })
         },
         name: "app.dashboard",
         component: Dashboard,

@@ -16,12 +16,10 @@ use App\Http\Controllers\Product\ProductController;
 */
 
 Route::prefix('auth')->group(function () {
-    Route::group(['middleware' => ['guest']], function () {
-        Route::post('login', [AuthController::class, 'store'])->name('login');
-    });
-    Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('login', [AuthController::class, 'store'])->name('login');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('products', ProductController::class);
         Route::delete('logout', [AuthController::class, 'destroy'])->name('logout');
     });
-
-    Route::apiResource('products', ProductController::class);
 })->name('auth.');

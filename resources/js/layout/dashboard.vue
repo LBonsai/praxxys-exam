@@ -9,15 +9,14 @@
               <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
             </svg>
           </button>
-          <a href="https://flowbite.com" class="flex ms-2 md:me-24">
-            <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Hello, {{ capitalizedUsername }}</span>
+          <a href="#" class="flex ms-2 md:me-24">
+            <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Hello, {{ userStore.currentUserUsername }}</span>
           </a>
         </div>
         <div class="flex items-center">
           <div class="flex items-center ms-3">
             <button
-                @click="logout"
-                v-if="userStore.user.id"
+                @click.prevent="logout"
                 type="button"
                 class="bg-gray-800 self-center font-semibold sm:text-1xl whitespace-nowrap dark:text-white">
               Logout
@@ -111,55 +110,26 @@
           </tr>
           </thead>
           <tbody>
-          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <tr v-for="product in productStore.products" :key="product.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+            <td class="px-6 py-4">{{ product.name }}</td>
+            <td class="px-6 py-4">{{ product.category.name }}</td>
+            <td class="px-6 py-4">{{ product.description }}</td>
             <td class="px-6 py-4">
-              Magic Keyboard
-            </td>
-            <td class="px-6 py-4">
-              Black
-            </td>
-            <td class="px-6 py-4">
-              Accessories
-            </td>
-            <td class="px-6 py-4">
-              <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2">Edit</a>
-              <a href="#" class="font-medium text-blue-600 dark:text-red-500 hover:underline">Delete</a>
-            </td>
-          </tr>
-          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <td class="px-6 py-4">
-              Magic Keyboard
-            </td>
-            <td class="px-6 py-4">
-              Blue
-            </td>
-            <td class="px-6 py-4">
-              Accessories
-            </td>
-            <td class="px-6 py-4">
-              <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2">Edit</a>
-              <a href="#" class="font-medium text-blue-600 dark:text-red-500 hover:underline">Delete</a>
-            </td>
-          </tr>
-          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <td class="px-6 py-4">
-              Magic Keyboard
-            </td>
-            <td class="px-6 py-4 dark:text-gray-400">
-              Silver
-            </td>
-            <td class="px-6 py-4">
-              Accessories
-            </td>
-            <td class="px-6 py-4">
-              <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2">Edit</a>
-              <a href="#" class="font-medium text-blue-600 dark:text-red-500 hover:underline">Delete</a>
+              <a
+                  href="javascript;"
+                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2"
+              >Edit</a>
+              <a
+                  href="javascript;"
+                  @click.prevent="deleteProduct(product.id)"
+                  class="font-medium text-blue-600 dark:text-red-500 hover:underline"
+              >Delete
+              </a>
             </td>
           </tr>
           </tbody>
         </table>
         <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
-          <span class="text-sm font-normal text-gray-900 dark:text-gray-900 mb-4 md:mb-0 block w-full md:inline md:w-auto">Showing <span class="font-semibold text-gray-900 dark:text-gray-900">1-10</span> of <span class="font-semibold text-gray-900 dark:text-gray">1000</span></span>
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
             <li>
               <a href="#" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
@@ -191,35 +161,30 @@
 </template>
 
 <script setup>
-    import { useUserStore } from '../Store/user';
-    import axios from "axios";
-    import router from "../Router";
-    import {reactive, computed} from "vue";
+    import { useUserStore } from "../Store/user";
+    import { onMounted } from "vue";
+    import { useProductStore } from "../Store/product";
 
-    const userStore = useUserStore()
+    const userStore = useUserStore();
+    const productStore = useProductStore();
 
-    const state = reactive ({
-      username: userStore.user.username
-    });
-
-    const capitalizedUsername = computed(() => {
-      return state.username.charAt(0).toUpperCase() + state.username.slice(1);
-    });
-
-    const logout = async () => {
-        if (confirm('Are you sure you want to logout?')) {
-            axios.delete('/api/auth/logout')
-                .then(() => {
-                    userStore.clearUser()
-                    router.push({name: 'auth.login'})
-                })
-                .catch(error => {})
+    const deleteProduct = async (id) => {
+        if (confirm("Are you sure you want to delete this product?")) {
+            await productStore.removeProduct(id);
         }
 
         return false;
     }
+
+    const logout = async () => {
+        if (confirm("Are you sure you want to logout?")) {
+            await userStore.logoutAdmin();
+        }
+
+        return false;
+    }
+
+    onMounted( () => {
+        productStore.getProducts();
+    });
 </script>
-
-<style scoped>
-
-</style>

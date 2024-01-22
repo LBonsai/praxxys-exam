@@ -36,7 +36,7 @@
         <button
             type="submit"
             class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600"
-            :disabled="state.loading"
+            :disabled="userStore.loading"
             @click.prevent="login"
         >Submit</button>
     </form>
@@ -44,43 +44,26 @@
 
 <script setup>
     import { reactive } from 'vue';
-    import axios from "axios";
-    import router from "../router/index.js"
     import { useUserStore } from '../store/user.js'
 
     const state = reactive ({
-        loading: false
+        storedValue: sessionStorage.getItem('username_or_email')
     });
-
-    const storedValue = sessionStorage.getItem('username_or_email');
 
     const userStore = useUserStore()
 
     const formData = reactive({
         username_or_email: sessionStorage.getItem('username_or_email') || "",
         password: "",
-        remember_me: storedValue !== undefined && storedValue !== null
+        remember_me: state.storedValue !== undefined && state.storedValue !== null
     });
 
     const login = async () => {
         state.errors = [];
-        state.loading = true;
+        userStore.setLoadingValue(true);
 
         rememberUsernameOrEmail();
-
-        await axios.get('/sanctum/csrf-cookie')
-
-        axios.post("/api/auth/login", {
-            username_or_email: formData.username_or_email,
-            password: formData.password,
-            remember_me: formData.remember_me
-        }).then((response) => {
-            userStore.setUserDetails(response)
-
-            router.push({ name: 'app.dashboard' })
-        }).catch(error => {
-            state.loading = false;
-        })
+        await userStore.loginAdmin(formData);
     }
 
     function rememberUsernameOrEmail() {
