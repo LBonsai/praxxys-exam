@@ -19,7 +19,7 @@ class ProductService
      */
     public function getProduct(array $params): array|Collection
     {
-        $query = Product::with('category')->orderBy('created_at', 'desc');
+        $query = Product::orderBy('created_at', 'desc');
 
         if (Arr::exists($params, 'search') && !empty(Arr::get($params, 'search'))) {
             $searchTerm = Arr::get($params, 'search');
@@ -36,7 +36,7 @@ class ProductService
             });
         }
 
-        $products = $query->get();
+        $products = $query->with('category')->get();
 
         if ($products->isEmpty()) {
             throw new ModelNotFoundException('No product data found.');

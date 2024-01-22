@@ -91,25 +91,37 @@
           </tr>
           </thead>
           <tbody>
-          <tr v-for="product in productStore.productList" :key="product.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <td class="px-6 py-4">{{ product.name }}</td>
-            <td class="px-6 py-4">{{ product.category.name }}</td>
-            <td class="px-6 py-4">{{ product.description }}</td>
-            <td class="px-6 py-4">
-              <a
-                  href="javascript;"
-                  class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2"
-              >Edit</a>
-              <a
-                  href="javascript;"
-                  @click.prevent="deleteProduct(product.id)"
-                  class="font-medium text-blue-600 dark:text-red-500 hover:underline"
-              >Delete
-              </a>
-            </td>
-          </tr>
+              <tr v-if="productStore.productList.length === 0">
+                  <td colspan="4" class="text-center py-6 bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    No data available
+                  </td>
+              </tr>
+              <tr v-else v-for="product in productStore.productList" :key="product.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <td class="px-6 py-4">{{ product.name }}</td>
+                  <td class="px-6 py-4">{{ product.category.name }}</td>
+                  <td class="px-6 py-4">{{ product.description }}</td>
+                  <td class="px-6 py-4">
+                      <a
+                          href="javascript;"
+                          class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-2"
+                      >
+                          Edit
+                      </a>
+                      <a
+                          href="javascript;"
+                          @click.prevent="deleteProduct(product.id)"
+                          class="font-medium text-blue-600 dark:text-red-500 hover:underline"
+                      >
+                          Delete
+                      </a>
+                  </td>
+              </tr>
           </tbody>
         </table>
+        <div class="absolute bottom-2 right-2 text-dark-900 dark:text-gray-900">
+          Total Products: {{ productStore.productCount }}
+        </div>
+
         <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
           <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
             <li>
