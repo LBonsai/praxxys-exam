@@ -27,12 +27,13 @@ class ProductController extends Controller
 
     /**
      * index
+     * @param Request $request
      * @return JsonResponse|AnonymousResourceCollection
      */
-    public function index(): JsonResponse|AnonymousResourceCollection
+    public function index(Request $request): JsonResponse|AnonymousResourceCollection
     {
         try {
-            $response = $this->productService->getProduct();
+            $response = $this->productService->getProduct($request->all());
             return ProductResource::collection($response);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);

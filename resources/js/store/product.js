@@ -4,19 +4,34 @@ import axios from "axios";
 export const useProductStore = defineStore({
     id: 'product',
     state: () => ({
-        products: []
+        products: [],
+        filters: {
+            search: "",
+            category_id: 0
+        }
     }),
     getters: {
-        productLists(state) {
+        productList(state) {
             return state.products;
         }
     },
     actions: {
         async getProducts() {
-            await axios.get("/api/auth/products")
+            const params = {
+                search: this.$state.filters.search,
+                category_id: this.$state.filters.category_id,
+            };
+
+            await axios.get("/api/auth/products", { params })
                 .then((response) => {
                     this.$state.products = response.data.data;
                 }).catch(error => {
+                    if (error.response.status === 404) {
+                        alert(error.response.data.message);
+                        this.$state.products = [];
+                        return false;
+                    }
+
                     alert("There is an error while fetching products.");
                     this.$state.products = [];
                 });

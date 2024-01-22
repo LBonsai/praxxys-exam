@@ -6,22 +6,40 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 
 class ProductService
 {
     /**
      * getProduct
-     * @return Builder[]|Collection
+     * @param array $params
+     * @return array|Collection
      */
-    public function getProduct(): Collection|array
+    public function getProduct(array $params): array|Collection
     {
-        $products = Product::with('category')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = Product::with('category')->orderBy('created_at', 'desc');
+
+        if (Arr::exists($params, 'search') && !empty(Arr::get($params, 'search'))) {
+            $searchTerm = Arr::get($params, 'search');
+            $query->where(function (Builder $query) use ($searchTerm) {
+                $query->where('name', 'like', "%$searchTerm%")
+                    ->orWhere('description', 'like', "%$searchTerm%");
+            });
+        }
+
+        if (Arr::exists($params, 'category_id') && (int)Arr::get($params, 'category_id') !== 0) {
+            $categoryId = Arr::get($params, 'category_id');
+            $query->where(function (Builder $query) use ($categoryId) {
+                $query->where('category_id', '=',$categoryId);
+            });
+        }
+
+        $products = $query->get();
 
         if ($products->isEmpty()) {
-            throw new ModelNotFoundException('No data found.');
+            throw new ModelNotFoundException('No product data found.');
         }
 
         return $products;
