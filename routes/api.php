@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Category\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Product\ProductController;
 
@@ -20,6 +21,9 @@ Route::prefix('auth')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('products', ProductController::class);
+        Route::apiResource('categories', CategoryController::class)->only([
+            'index'
+        ]);
         Route::delete('logout', [AuthController::class, 'destroy'])->name('logout');
     });
 })->name('auth.');

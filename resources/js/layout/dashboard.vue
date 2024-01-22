@@ -1,32 +1,5 @@
 <template>
-  <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-    <div class="px-3 py-3 lg:px-5 lg:pl-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center justify-start rtl:justify-end">
-          <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-            <span class="sr-only">Open sidebar</span>
-            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-            </svg>
-          </button>
-          <a href="#" class="flex ms-2 md:me-24">
-            <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Hello, {{ userStore.currentUserUsername }}</span>
-          </a>
-        </div>
-        <div class="flex items-center">
-          <div class="flex items-center ms-3">
-            <button
-                @click.prevent="logout"
-                type="button"
-                class="bg-gray-800 self-center font-semibold sm:text-1xl whitespace-nowrap dark:text-white">
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
-
+  <Header/>
   <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
     <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
       <ul class="space-y-2 font-medium">
@@ -52,14 +25,14 @@
               <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
             </div>
             <input
-                v-model="productStore.filters.search"
+                v-model.trim="searchFilter"
                 type="text"
                 id="table-search"
                 class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Search by Name or Description"
             />
             <button
-                @click.prevent="searchProduct"
+                @click.prevent="searchProduct(true)"
                 type="button"
                 class="absolute inset-y-0 right-0 px-3 flex items-center bg-blue-500 text-white rounded-r-lg"
             >
@@ -67,7 +40,7 @@
             </button>
           </div>
           <div>
-            <select @change="searchProduct" id="categories" v-model="productStore.filters.category_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select @change="searchProduct(false)" id="categories" v-model="productStore.filters.category_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
               <option value="0" selected disabled>Select a category</option>
               <option v-for="category in categoryStore.categoryList" :key="category.id" :value="category.id">{{ category.name }}</option>
             </select>
@@ -122,19 +95,7 @@
           Total Products: {{ productStore.productCount }}
         </div>
 
-        <nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
-            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-                <li>
-                    <button @click.prevent="changePage('prev')" :disabled="productStore.currentPage === 1" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</button>
-                </li>
-                <li v-for="pageNumber in productStore.totalPages" :key="pageNumber">
-                    <button :disabled="productStore.currentPage === pageNumber" @click.prevent="changePage(pageNumber)" :class="{ 'text-blue-900 dark:border-gray-800 dark:bg-blue-900 dark:text-white': productStore.currentPage === pageNumber }" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ pageNumber }}</button>
-                </li>
-                <li>
-                    <button @click.prevent="changePage('next')" :disabled="productStore.currentPage === productStore.totalPages" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</button>
-                </li>
-            </ul>
-        </nav>
+        <Pagination/>
       </div>
 
     </div>
@@ -142,42 +103,31 @@
 </template>
 
 <script setup>
-    import { useUserStore } from "../Store/user";
-    import { onMounted } from "vue";
+    import { onMounted, ref } from "vue";
     import { useProductStore } from "../Store/product";
     import { useCategoryStore } from "../Store/category";
+    import Pagination from "../components/pagination.vue";
+    import Header from "../components/header.vue";
+    import _ from 'lodash';
 
-    const userStore = useUserStore();
+    const searchFilter = ref('')
+
     const productStore = useProductStore();
     const categoryStore = useCategoryStore();
 
-    const searchProduct = () => {
-        productStore.getProducts();
-    };
-
-    const changePage = (page) => {
-        if (page === 'prev' && productStore.currentPage > 1) {
-            productStore.$state.current_page--;
-        } else if (page === 'next' && productStore.currentPage < productStore.totalPages) {
-            productStore.$state.current_page++;
-        } else if (typeof page === 'number') {
-            productStore.$state.current_page = page;
+    const searchProduct = _.debounce((isClicked) => {
+      if (searchFilter.value) {
+        if (isClicked) {
+          productStore.filters.search = searchFilter.value;
         }
 
         productStore.getProducts();
-    }
+      }
+    }, 300);
 
     const deleteProduct = async (id) => {
         if (confirm("Are you sure you want to delete this product?")) {
             await productStore.removeProduct(id);
-        }
-
-        return false;
-    }
-
-    const logout = () => {
-        if (confirm("Are you sure you want to logout?")) {
-            userStore.logoutAdmin();
         }
 
         return false;
