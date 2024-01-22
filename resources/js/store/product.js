@@ -4,18 +4,28 @@ import axios from "axios";
 export const useProductStore = defineStore({
     id: 'product',
     state: () => ({
+        count: 0,
         products: [],
         filters: {
             search: "",
             category_id: 0
-        }
+        },
+        current_page: 1,
+        per_page: 10,
+        total_pages: 0
     }),
     getters: {
         productList(state) {
             return state.products;
         },
         productCount(state) {
-            return state.products.length;
+            return state.count;
+        },
+        currentPage(state) {
+            return state.current_page;
+        },
+        totalPages(state) {
+            return state.total_pages;
         }
     },
     actions: {
@@ -23,20 +33,28 @@ export const useProductStore = defineStore({
             const params = {
                 search: this.$state.filters.search,
                 category_id: this.$state.filters.category_id,
+                page: this.$state.current_page,
+                per_page: this.$state.per_page,
             };
 
             await axios.get("/api/auth/products", { params })
                 .then((response) => {
                     this.$state.products = response.data.data;
+                    this.$state.count = response.data.meta.total;
+                    this.setTotalPagesValue(response.data.meta.last_page);
                 }).catch(error => {
                     if (error.response.status === 404) {
                         alert(error.response.data.message);
                         this.$state.products = [];
+                        this.$state.count = 0;
+                        this.setTotalPagesValue(1);
                         return false;
                     }
 
                     alert("There is an error while fetching products.");
                     this.$state.products = [];
+                    this.$state.count = 0;
+                    this.setTotalPagesValue(1);
                 });
         },
         async removeProduct(id) {
@@ -49,6 +67,9 @@ export const useProductStore = defineStore({
                     this.$state.products = [];
             });
         },
+        setTotalPagesValue(value) {
+            this.$state.total_pages = value;
+        }
     },
     persist: true
 });

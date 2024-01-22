@@ -13,12 +13,13 @@ use Illuminate\Support\Arr;
 class ProductService
 {
     /**
-     * getProduct
      * @param array $params
-     * @return array|Collection
+     * @return mixed
      */
-    public function getProduct(array $params): array|Collection
+    public function getProduct(array $params)
     {
+        $perPage = Arr::get($params, 'per_page', 10); // Adjust the number of items per page
+
         $query = Product::orderBy('created_at', 'desc');
 
         if (Arr::exists($params, 'search') && !empty(Arr::get($params, 'search'))) {
@@ -31,12 +32,10 @@ class ProductService
 
         if (Arr::exists($params, 'category_id') && (int)Arr::get($params, 'category_id') !== 0) {
             $categoryId = Arr::get($params, 'category_id');
-            $query->where(function (Builder $query) use ($categoryId) {
-                $query->where('category_id', '=',$categoryId);
-            });
+            $query->where('category_id', '=', $categoryId);
         }
 
-        $products = $query->with('category')->get();
+        $products = $query->with('category')->paginate($perPage);
 
         if ($products->isEmpty()) {
             throw new ModelNotFoundException('No product data found.');
