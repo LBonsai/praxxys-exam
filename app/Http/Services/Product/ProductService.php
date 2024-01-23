@@ -19,7 +19,7 @@ class ProductService
      */
     public function getProduct(array $params)
     {
-        $perPage = Arr::get($params, 'per_page', 10); // Adjust the number of items per page
+        $perPage = Arr::get($params, 'per_page', 10);
 
         $query = Product::orderBy('created_at', 'desc');
 

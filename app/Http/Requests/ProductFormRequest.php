@@ -23,7 +23,6 @@ class ProductFormRequest extends FormRequest
      */
     public function rules(): array
     {
-        // add product image
         $productId = $this->route('product');
 
         return [
