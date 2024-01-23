@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name', 50)->unique();
             $table->string('description');
-            $table->dateTime('datetime')->default(now());
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('category_id')->constrained('categories');

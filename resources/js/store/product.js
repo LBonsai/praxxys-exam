@@ -85,13 +85,16 @@ export const useProductStore = defineStore({
                 });
         },
         async updateProduct(formData, id) {
-            await axios.put("/api/auth/products/" + id, formData)
-                .then((response) => {
-                    alert("The product updated successfully.");
-                    router.push({ name: "products.list" })
-                }).catch(error => {
-                    alert("There is an error while updating products.");
-                });
+            await axios.post("/api/auth/products/" + id, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }).then((response) => {
+                alert("The product updated successfully.");
+                router.push({ name: "products.list" })
+            }).catch(error => {
+                alert("There is an error while updating products.");
+            });
         },
         async removeProduct(id) {
             await axios.delete("/api/auth/products/" + id)

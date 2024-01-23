@@ -4,13 +4,14 @@ namespace App\Http\Traits;
 
 trait ImageTrait {
     /**
-     * @param $params
+     * uploadImage
+     * @param array $images
      * @return array
      */
-    public function uploadImage($params): array
+    public function uploadImage(array $images): array
     {
         $uploadedImages = [];
-        foreach ($params['images'] as $image) {
+        foreach ($images as $image) {
             $imageName = time() . '_' . $image->getClientOriginalName();
             $image->move(public_path('uploads'), $imageName);
             $uploadedImages[] = [

@@ -54,9 +54,10 @@ class ProductService
     {
         $product = Product::create($params);
 
-        $uploadedImages = $this->uploadImage($params);
-
-        $product->images()->createMany($uploadedImages);
+        if (Arr::exists($params, 'images')) {
+            $uploadedImages = $this->uploadImage($params['images']);
+            $product->images()->createMany($uploadedImages);
+        }
 
         return $product;
     }
@@ -83,10 +84,15 @@ class ProductService
      */
     public function updateProduct(array $params, int $id)
     {
-        // Add update of product images
-        // Add uploading of product images(multiple)
-        // Separate the process in ImageService
-        return tap(Product::whereId($id))->update($params)->first();
+        $updateParams = Arr::except($params, 'images');
+        $product = tap(Product::whereId($id))->update($updateParams)->first();
+
+        if (Arr::exists($params, 'images')) {
+            $uploadedImages = $this->uploadImage($params['images']);
+            $product->images()->createMany($uploadedImages);
+        }
+
+        return $product;
     }
 
     /**
