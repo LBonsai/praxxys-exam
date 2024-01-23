@@ -114,7 +114,7 @@
 
     const searchProduct = _.debounce((isClicked) => {
       if (isClicked) {
-        productStore.filters.search = searchFilter.value;
+          productStore.filters.search = searchFilter.value;
       }
 
       productStore.getProducts();

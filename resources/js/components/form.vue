@@ -40,8 +40,17 @@
 
     <div class="mb-5">
         <label class="block mb-2 text-sm font-medium text-gray-700" for="default_size">Image</label>
-        <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="default_size" type="file" multiple>
-        <p class="mt-1 text-sm text-gray-700" id="file_input_help">PNG, JPG or GIF only</p>
+        <input
+            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+            id="default_size"
+            type="file"
+            multiple
+            @change="handleFileChange"
+        />
+        <p class="mt-1 text-sm text-gray-700" id="file_input_help">PNG, JPG, JPEG or GIF only</p>
+        <p v-if="errors.images" class="mt-1 text-sm text-red-600 dark:text-red-500">
+          <span class="font-medium">{{ errors.images }}</span>
+        </p>
     </div>
 
     <div class="mb-5">
@@ -80,6 +89,7 @@
     import router from "../router/router.js";
     import { validateProduct } from "../validators/productValidation.js";
     import { useProductStore } from "../store/product.js";
+    import { validateProductImages } from "../validators/productImageValidation.js";
 
     const { id } = defineProps(['id']);
 
@@ -87,24 +97,40 @@
     const categoryStore = useCategoryStore();
 
     const errors = reactive({
-      name: '',
-      category_id: '',
-      description: '',
-    })
+        name: '',
+        category_id: '',
+        description: '',
+        images: ''
+    });
+
+    const handleFileChange = (event) => {
+      productStore.$state.product.images = event.target.files;
+    };
 
     const validateProductFields = () => {
-      const validationErrors = validateProduct(productStore.$state.product);
+      const productErrors = validateProduct(productStore.$state.product);
+      const productImageError = validateProductImages(productStore.$state.product.images);
 
-      errors.name = validationErrors.name || '';
-      errors.category_id = validationErrors.category_id || '';
-      errors.description = validationErrors.description || '';
+      resetErrors();
 
-      if (!errors.name && !errors.category_id && !errors.description) {
-          if (id) {
-              productStore.updateProduct(id);
-          } else {
-              productStore.createProduct();
-          }
+      if (productErrors.name || productErrors.category_id || productErrors.description) {
+          errors.name = productErrors.name;
+          errors.category_id = productErrors.category_id;
+          errors.description = productErrors.description;
+          return false;
+      }
+
+      if (productImageError.images) {
+          errors.images = productImageError.images;
+          return false;
+      }
+
+      if (id) {
+          productStore.updateProduct(
+              appendData(), id
+          );
+      } else {
+          productStore.createProduct(appendData());
       }
     }
 
@@ -122,17 +148,32 @@
         // state.date = event.target.value;
     };
 
+    const appendData = () => {
+        let formData = new FormData();
+
+        for (let i = 0; i < productStore.$state.product.images.length; i++) {
+            formData.append('images[]', productStore.$state.product.images[i]);
+        }
+
+        formData.append('name', productStore.$state.product.name);
+        formData.append('category_id', productStore.$state.product.category_id);
+        formData.append('description', productStore.$state.product.description);
+
+        return formData;
+    }
+
+    const resetErrors = () => {
+        errors.name = '';
+        errors.category_id = '';
+        errors.description = '';
+        errors.images = '';
+    }
+
     onMounted( () => {
         if (id) {
             productStore.getProductById(id);
         }
 
         categoryStore.getCategories();
-
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     let today = new Date();
-        //     let dateInput = document.getElementById('dateInput');
-        //     dateInput.value = (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear();
-        // });
     });
 </script>

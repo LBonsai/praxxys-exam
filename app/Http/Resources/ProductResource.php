@@ -21,6 +21,7 @@ class ProductResource extends JsonResource
             'created_at' => $this->created_at,
             'category_id' => (int)$this->category_id,
             'category' => $this->category,
+            'images' => $this->images
         ];
     }
 }

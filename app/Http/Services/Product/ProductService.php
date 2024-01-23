@@ -2,7 +2,9 @@
 
 namespace App\Http\Services\Product;
 
+use App\Http\Traits\ImageTrait;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -12,6 +14,8 @@ use Illuminate\Support\Arr;
 
 class ProductService
 {
+    use ImageTrait;
+
     /**
      * @param array $params
      * @return mixed
@@ -51,10 +55,13 @@ class ProductService
      */
     public function createProduct(array $params): mixed
     {
-        // Add insert of product images
-        // Add uploading of product images(multiple)
-        // Separate the process in ImageService
-        return Product::create($params);
+        $product = Product::create($params);
+
+        $uploadedImages = $this->uploadImage($params);
+
+        $product->images()->createMany($uploadedImages);
+
+        return $product;
     }
 
     /**

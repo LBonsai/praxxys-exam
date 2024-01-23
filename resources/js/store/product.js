@@ -17,7 +17,8 @@ export const useProductStore = defineStore({
         product: {
             name: '',
             category_id: 0,
-            description: ''
+            description: '',
+            images: ''
         }
     }),
     getters: {
@@ -71,11 +72,11 @@ export const useProductStore = defineStore({
                     this.$state.product.description = response.data.data.description;
                 }).catch(error => {
                     alert(error.response.data.message);
-                    router.push({ name: "products.list" });
+                    // router.push({ name: "products.list" });
                 });
         },
-        async createProduct() {
-            await axios.post("/api/auth/products", this.$state.product)
+        async createProduct(formData) {
+            await axios.post("/api/auth/products", formData)
                 .then((response) => {
                     alert("The product created successfully.");
                     router.push({ name: "products.list" })
@@ -83,8 +84,8 @@ export const useProductStore = defineStore({
                     alert("There is an error while creating products.");
                 });
         },
-        async updateProduct(id) {
-            await axios.put("/api/auth/products/" + id, this.$state.product)
+        async updateProduct(formData, id) {
+            await axios.put("/api/auth/products/" + id, formData)
                 .then((response) => {
                     alert("The product updated successfully.");
                     router.push({ name: "products.list" })
