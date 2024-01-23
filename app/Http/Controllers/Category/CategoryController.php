@@ -26,8 +26,8 @@ class CategoryController extends Controller
     public function index(): JsonResponse|AnonymousResourceCollection
     {
         try {
-            $response = $this->categoryService->getCategories();
-            return CategoryResource::collection($response);
+            $result = $this->categoryService->getCategories();
+            return CategoryResource::collection($result);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         }

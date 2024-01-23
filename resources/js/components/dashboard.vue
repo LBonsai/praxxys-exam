@@ -100,10 +100,10 @@
 
 <script setup>
     import { onMounted, ref } from "vue";
-    import { useProductStore } from "../Store/product";
-    import { useCategoryStore } from "../Store/category";
-    import Pagination from "../components/pagination.vue";
-    import Header from "../components/header.vue";
+    import { useProductStore } from "../store/product.js";
+    import { useCategoryStore } from "../store/category.js";
+    import Pagination from "./pagination.vue";
+    import Header from "./header.vue";
     import _ from 'lodash';
     import router from "../router/router.js";
 

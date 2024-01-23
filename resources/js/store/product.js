@@ -72,7 +72,7 @@ export const useProductStore = defineStore({
                     this.$state.product.description = response.data.data.description;
                 }).catch(error => {
                     alert(error.response.data.message);
-                    // router.push({ name: "products.list" });
+                    router.push({ name: "products.list" });
                 });
         },
         async createProduct(formData) {
@@ -81,7 +81,14 @@ export const useProductStore = defineStore({
                     alert("The product created successfully.");
                     router.push({ name: "products.list" })
                 }).catch(error => {
+                    if (error.response.status === 422) {
+                        alert(error.response.data.message);
+                        return false;
+                    }
+
                     alert("There is an error while creating products.");
+                }).finally(() => {
+                    this.$state.filters.category_id = 0;
                 });
         },
         async updateProduct(formData, id) {
@@ -94,15 +101,17 @@ export const useProductStore = defineStore({
                 router.push({ name: "products.list" })
             }).catch(error => {
                 alert("There is an error while updating products.");
+            }).finally(() => {
+                this.$state.filters.category_id = 0;
             });
         },
         async removeProduct(id) {
             await axios.delete("/api/auth/products/" + id)
                 .then((response) => {
                     this.getProducts();
-                    alert('Product deleted successfully.');
+                    alert("Product deleted successfully.");
                 }).catch(error => {
-                    alert('There is an error while deleting product.');
+                    alert("There is an error while deleting product.");
                     this.$state.products = [];
             });
         },
@@ -110,9 +119,13 @@ export const useProductStore = defineStore({
             this.$state.total_pages = value;
         },
         clearProductState() {
-            this.$state.product.name = '';
+            this.$state.product.name = "";
             this.$state.product.category_id = 0;
-            this.$state.product.description = '';
+            this.$state.product.description = "";
+        },
+        clearSearchFilter() {
+            this.$state.filters.category_id = 0;
+            this.$state.filters.search = "";
         }
     },
     persist: true

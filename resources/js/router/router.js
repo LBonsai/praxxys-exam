@@ -4,7 +4,7 @@ import Login from "../components/login.vue"
 import { useUserStore } from "../Store/user";
 import auth from "../layout/auth.vue";
 import app from "../layout/app.vue";
-import Dashboard from "../layout/dashboard.vue";
+import Dashboard from "../components/dashboard.vue";
 import Form from "../components/form.vue";
 
 const routes = [

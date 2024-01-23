@@ -33,8 +33,8 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse|AnonymousResourceCollection
     {
         try {
-            $response = $this->productService->getProduct($request->all());
-            return ProductResource::collection($response);
+            $result = $this->productService->getProduct($request->all());
+            return ProductResource::collection($result);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         }
@@ -47,8 +47,8 @@ class ProductController extends Controller
      */
     public function store(ProductFormRequest $request): ProductResource
     {
-        $response = $this->productService->createProduct($request->validated());
-        return new ProductResource($response);
+        $result = $this->productService->createProduct($request->validated());
+        return new ProductResource($result);
     }
 
     /**
@@ -74,8 +74,8 @@ class ProductController extends Controller
      */
     public function update(ProductFormRequest $request, int $id): ProductResource
     {
-        $response = $this->productService->updateProduct($request->validated(), $id);
-        return new ProductResource($response);
+        $result = $this->productService->updateProduct($request->validated(), $id);
+        return new ProductResource($result);
     }
 
     /**

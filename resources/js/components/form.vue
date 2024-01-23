@@ -159,6 +159,7 @@
     }
 
     onMounted( () => {
+        productStore.clearSearchFilter();
         if (id) {
             productStore.getProductById(id);
         }
