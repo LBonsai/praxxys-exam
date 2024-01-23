@@ -30,7 +30,6 @@ class ProductFormRequest extends FormRequest
             'name' => 'required|string|unique:products,name,' . $productId,
             'category_id' => ['required', 'integer', new ExistingCategory],
             'description' => 'required|string',
-            'datetime' => 'sometimes|date',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif'
         ];
