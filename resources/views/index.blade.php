@@ -10,6 +10,7 @@
     <title>{{ config('app.name') }}</title>
 
     <!-- Scripts and Style-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/datepicker.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

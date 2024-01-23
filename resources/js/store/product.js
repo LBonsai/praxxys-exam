@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from "axios";
+import router from "../router/router.js";
 
 export const useProductStore = defineStore({
     id: 'product',
@@ -12,7 +13,12 @@ export const useProductStore = defineStore({
         },
         current_page: 1,
         per_page: 10,
-        total_pages: 0
+        total_pages: 0,
+        product: {
+            name: '',
+            category_id: 0,
+            description: ''
+        }
     }),
     getters: {
         productList(state) {
@@ -57,6 +63,35 @@ export const useProductStore = defineStore({
                     this.setTotalPagesValue(1);
                 });
         },
+        async getProductById(id) {
+            await axios.get("/api/auth/products/" + id)
+                .then((response) => {
+                    this.$state.product.name = response.data.data.name;
+                    this.$state.product.category_id = response.data.data.category_id;
+                    this.$state.product.description = response.data.data.description;
+                }).catch(error => {
+                    alert(error.response.data.message);
+                    router.push({ name: "products.list" });
+                });
+        },
+        async createProduct() {
+            await axios.post("/api/auth/products", this.$state.product)
+                .then((response) => {
+                    alert("The product created successfully.");
+                    router.push({ name: "products.list" })
+                }).catch(error => {
+                    alert("There is an error while creating products.");
+                });
+        },
+        async updateProduct(id) {
+            await axios.put("/api/auth/products/" + id, this.$state.product)
+                .then((response) => {
+                    alert("The product updated successfully.");
+                    router.push({ name: "products.list" })
+                }).catch(error => {
+                    alert("There is an error while updating products.");
+                });
+        },
         async removeProduct(id) {
             await axios.delete("/api/auth/products/" + id)
                 .then((response) => {
@@ -69,6 +104,11 @@ export const useProductStore = defineStore({
         },
         setTotalPagesValue(value) {
             this.$state.total_pages = value;
+        },
+        clearProductState() {
+            this.$state.product.name = '';
+            this.$state.product.category_id = 0;
+            this.$state.product.description = '';
         }
     },
     persist: true

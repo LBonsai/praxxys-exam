@@ -31,7 +31,7 @@ export const useUserStore = defineStore({
             await axios.post("/api/auth/login", formdata)
                 .then((response) => {
                     this.setUserDetails(response);
-                    router.push({ name: "app.dashboard" })
+                    router.push({ name: "products.list" })
                 }).catch(error => {
                     alert("There is an error while logging in.");
                 }).finally(() => {
@@ -42,7 +42,7 @@ export const useUserStore = defineStore({
             await axios.delete("/api/auth/logout")
                 .then(() => {
                     this.clearUser();
-                    router.push({ name: "auth.login" });
+                    router.push({ name: "app.login" });
                 }).catch(error => {
                     alert("There is an error while logging out.");
                 })

@@ -9,7 +9,7 @@
                             <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                         </svg>
                     </button>
-                    <a href="#" class="flex ms-2 md:me-24">
+                    <a href="#" class="flex ms-2 md:me-24" @click="redirectToProductList">
                         <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Hello, {{ userStore.currentUserUsername }}</span>
                     </a>
                 </div>
@@ -31,14 +31,19 @@
 
 <script setup>
     import { useUserStore } from "../store/user";
+    import router from "../router/router.js";
 
     const userStore = useUserStore();
 
     const logout = () => {
-      if (confirm("Are you sure you want to logout?")) {
-        userStore.logoutAdmin();
-      }
+        if (confirm("Are you sure you want to logout?")) {
+            userStore.logoutAdmin();
+        }
 
-      return false;
+        return false;
+    }
+
+    const redirectToProductList = () => {
+        router.push({ name: "products.list" });
     }
 </script>

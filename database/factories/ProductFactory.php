@@ -19,8 +19,8 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->word,
-            'description' => fake()->sentence,
+            'name' => fake()->unique()->word(50),
+            'description' => fake()->paragraph,
             'category_id' => Category::all()->random()->id,
         ];
     }

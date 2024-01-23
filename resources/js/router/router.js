@@ -3,36 +3,55 @@ import { createRouter, createWebHistory } from "vue-router";
 import Login from "../components/login.vue"
 import { useUserStore } from "../Store/user";
 import auth from "../layout/auth.vue";
+import app from "../layout/app.vue";
 import Dashboard from "../layout/dashboard.vue";
+import Form from "../components/form.vue";
 
 const routes = [
     {
         path: "/",
-        redirect: "/auth/login",
+        redirect: "/login",
     },
     {
-        path: "/auth",
-        name: "auth",
+        path: "/login",
+        name: "login",
         component: auth,
         beforeEnter: (to, from, next) => {
-            useUserStore().user.id ? next({ name: "app.dashboard" }) : next()
+            useUserStore().user.id ? next({ name: "products.list" }) : next()
         },
         children: [
             {
-                path: 'login',
+                path: '/login',
+                name: 'app.login',
                 component: Login,
-                name: 'auth.login'
             }
         ],
     },
     {
-        path: "/app",
+        path: "/products",
+        name: "products",
+        component: app,
         beforeEnter: (to, from, next) => {
-            useUserStore().user.id ? next() : next({ name: "auth.login" })
+            useUserStore().user.id ? next() : next({ name: "app.login" })
         },
-        name: "app.dashboard",
-        component: Dashboard,
-        children: []
+        children: [
+            {
+                path: '/products',
+                name: 'products.list',
+                component: Dashboard,
+            },
+            {
+                path: '/products/create',
+                name: 'products.create',
+                component: Form
+            },
+            {
+                path: '/products/:id/edit',
+                name: 'products.edit',
+                component: Form,
+                props: true
+            }
+        ]
     }
 ];
 
